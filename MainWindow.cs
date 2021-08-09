@@ -15,7 +15,6 @@ namespace Mouse_Warp
         {
             InitializeComponent();
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
-
             Screen[] screens = Screen.AllScreens;
 
             SetWindowSize(
