@@ -10,34 +10,74 @@ namespace Mouse_Warp
     public partial class MainWindow : Form
     {
         private HashSet<Button> buttons = new HashSet<Button>();
+        private MouseWarp mouseWarp = new MouseWarp();
         public MainWindow()
         {
             InitializeComponent();
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
 
-            SetWindowSize(500, 500);
+            Screen[] screens = Screen.AllScreens;
 
-            Array.ForEach(Screen.AllScreens, s => Debug.WriteLine(s));
+            SetWindowSize(
+                // Dont ask about the 20 ? 
+                totalRealEstateWidth(screens) / GlobalConstant.Scale + GlobalConstant.WindowPadding + 20,
+                totalRealEstateHeight(screens) / GlobalConstant.Scale + GlobalConstant.MenuBarHeight + GlobalConstant.WindowPadding
+               );
 
-            this.Shown += (s, e) => CreateButton("Monitor1", new Size(200, 100), new Point(50, 50));
-            this.Shown += (s, e) => CreateButton("Monitor2", new Size(150, 100), new Point(80, 300));
-            this.Shown += (s, e) => CreateButton("Monitor3", new Size(150, 100), new Point(100, 200));
+            foreach (Screen screen in Screen.AllScreens)
+            {
+                this.Shown += (s, e) => CreateButton(
+                    screen.DeviceName,
+                    new Size(
+                        screen.Bounds.Width,
+                        screen.Bounds.Height) / GlobalConstant.Scale,
+                    new Point(
+                        screen.Bounds.X / GlobalConstant.Scale + GlobalConstant.WindowPadding / 2,
+                        (screen.Bounds.Y + yOffset(screens)) / GlobalConstant.Scale + GlobalConstant.WindowPadding / 2) 
+                    );
+            }
+        }
+        // If Y is a minus then give the inverse of that to add to values in the find max height function
+        private int yOffset(Screen[] screens)
+        {
+            int lowestHeight = 0;
+            foreach (Screen screen in screens)
+            {
 
-            //foreach (var screen in Screen.AllScreens)
-            //{
-            //    // For each screen, add the screen properties to a list box.
-            //    //System.Diagnostics.Debug.WriteLine("Device Name: " + screen);
-            //    this.Shown += (s, e) => CreateButton("test", new Size(), new Point());
-            //    //Debug.WriteLine("Device Name: " + screen.DeviceName);
-            //    //Debug.WriteLine("Bounds: " + screen.Bounds.ToString());
-            //    //Debug.WriteLine("Type: " + screen.GetType().ToString());
-            //    //Debug.WriteLine("Working Area: " + screen.WorkingArea.ToString());
-            //    //Debug.WriteLine("Primary Screen: " + screen.Primary.ToString());
-            //}
+                if (screen.Bounds.Y < lowestHeight)
+                {
+                    lowestHeight = screen.Bounds.Y;
+                }
+            }
+            return lowestHeight <= 0 ? lowestHeight * -1 : 0;
+        }
 
-            MouseWarp mouseWarp = new MouseWarp();
-            mouseWarp.TestFunction("Yeoooo!");
+        private int totalRealEstateWidth(Screen[] screens)
+        {
+            int maxWidth = 0;
+            foreach (Screen screen in screens)
+            {
+                int totalWidth = screen.Bounds.X + screen.Bounds.Width;
+                if (totalWidth > maxWidth)
+                {
+                    maxWidth = totalWidth;
+                }
+            }
+            return maxWidth;
+        }
 
+        private int totalRealEstateHeight(Screen[] screens)
+        {
+            int maxHeight = 0;
+            foreach (Screen screen in screens)
+            {
+                int theFuckIsThis = screen.Bounds.Y + yOffset(screens) + screen.Bounds.Height;
+                if (theFuckIsThis > maxHeight)
+                {
+                    maxHeight = theFuckIsThis;
+                }
+            }
+            return maxHeight;
         }
 
         private void MainWindow_Resize(object sender, EventArgs e)
@@ -61,7 +101,7 @@ namespace Mouse_Warp
         {
             Button newButton = new Button();
             this.Controls.Add(newButton);
-            newButton.Text = name;
+            newButton.Text = name.Replace(@"\\.\", "");
             newButton.Name = name;
             newButton.BackColor = Color.Black;
             newButton.ForeColor = Color.White;
@@ -70,10 +110,10 @@ namespace Mouse_Warp
             newButton.FlatAppearance.BorderSize = 1;
             newButton.Size = size;
             newButton.Location = location;
-            newButton.MouseDown += new MouseEventHandler(this.MyButtonHandler);
+            newButton.MouseDown += new MouseEventHandler(this.OnScreenSelectHandler);
         }
 
-        private void MyButtonHandler(object sender, MouseEventArgs e)
+        private void OnScreenSelectHandler(object sender, MouseEventArgs e)
         {
             Debug.WriteLine(buttons.Count());
             //Debug.WriteLine((sender as Button).Name);
@@ -83,9 +123,8 @@ namespace Mouse_Warp
                 buttons.Clear();
             }
             buttons.Add(sender as Button);
-            //buttons.Find(button => button.Name == "Monitor2").BackColor = Color.Pink;
-            buttons.ToList().ForEach(button => SetButtonColor(button, Color.Blue));
-            buttons.ToList().ForEach(button => Debug.WriteLine(button));
+            buttons.ToList().ForEach(button => { button.BackColor = Color.Blue; });
+            mouseWarp.setMonitorNames(new List<string>(buttons.Select(button => button.Name)));
         }
 
         private void SetButtonColor(Button button, Color color)
