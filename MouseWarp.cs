@@ -65,14 +65,6 @@ public class MouseWarp
         monitorNames = _monitorNames;
     }
 
-    private void HookManager_MouseMove(object sender, MouseEventArgs e)
-    {
-
-      
-
-        
-    }
-
 
     private int translate(int value, int left_min, int left_max, int right_min, int right_max)
     {

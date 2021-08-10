@@ -11,6 +11,7 @@ namespace Mouse_Warp
     {
         private HashSet<Button> buttons = new HashSet<Button>();
         private MouseWarp mouseWarp = new MouseWarp();
+        private Boolean isQuitting = false;
         public MainWindow()
         {
             InitializeComponent();
@@ -35,6 +36,8 @@ namespace Mouse_Warp
                         (screen.Bounds.Y + yOffset(screens)) / GlobalConstant.Scale + GlobalConstant.WindowPadding / 2) 
                     );
             }
+
+
         }
         // If Y is a minus then give the inverse of that to add to values in the find max height function
         private int yOffset(Screen[] screens)
@@ -145,7 +148,7 @@ namespace Mouse_Warp
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            if (e.CloseReason != CloseReason.WindowsShutDown)
+            if (e.CloseReason != CloseReason.WindowsShutDown && !isQuitting)
             {
                 Hide();
                 Debug.WriteLine("Close override and minimize to tray");
@@ -155,5 +158,10 @@ namespace Mouse_Warp
             base.OnFormClosing(e);
         }
 
+        private void QuitMenuItem_Click(object sender, EventArgs e)
+        {
+            isQuitting = true;
+            Close();
+        }
     }
 }

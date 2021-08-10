@@ -32,13 +32,32 @@ namespace Mouse_Warp
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             this.trayIcon = new System.Windows.Forms.NotifyIcon(this.components);
+            this.trayIconContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.QuitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.trayIconContextMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // trayIcon
             // 
+            this.trayIcon.ContextMenuStrip = this.trayIconContextMenu;
             this.trayIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("trayIcon.Icon")));
             this.trayIcon.Text = "Mouse Warp";
             this.trayIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.trayIcon_MouseDoubleClick);
+            // 
+            // trayIconContextMenu
+            // 
+            this.trayIconContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.QuitMenuItem});
+            this.trayIconContextMenu.Name = "trayIconContextMenu";
+            this.trayIconContextMenu.Size = new System.Drawing.Size(181, 48);
+            // 
+            // QuitMenuItem
+            // 
+            this.QuitMenuItem.AutoSize = false;
+            this.QuitMenuItem.Name = "QuitMenuItem";
+            this.QuitMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.QuitMenuItem.Text = "Quit";
+            this.QuitMenuItem.Click += new System.EventHandler(this.QuitMenuItem_Click);
             // 
             // MainWindow
             // 
@@ -52,6 +71,7 @@ namespace Mouse_Warp
             this.Text = "Mouse Warp";
             this.Load += new System.EventHandler(this.MainWindow_Load);
             this.Resize += new System.EventHandler(this.MainWindow_Resize);
+            this.trayIconContextMenu.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -59,6 +79,8 @@ namespace Mouse_Warp
         #endregion
 
         private System.Windows.Forms.NotifyIcon trayIcon;
+        private System.Windows.Forms.ContextMenuStrip trayIconContextMenu;
+        private System.Windows.Forms.ToolStripMenuItem QuitMenuItem;
     }
 }
 
