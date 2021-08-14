@@ -51,10 +51,15 @@ namespace Mouse_Warp
             // If left to right then :
 
             if (Cursor.Position.X == monitor1.Bounds.X + monitor1.Bounds.Width - 1 &&
-                Cursor.Position.Y > monitor1.Bounds.Y)
+                Cursor.Position.Y < monitor1.Bounds.Y + monitor1.Bounds.Height)
+            {
                 Cursor.Position = new Point(monitor2.Bounds.X + 2, Cursor.Position.Y);
-            if (Cursor.Position.X == monitor2.Bounds.X && Cursor.Position.Y > monitor2.Bounds.Y)
-                Cursor.Position = new Point(monitor1.Bounds.X + monitor1.Bounds.Width - 2, Cursor.Position.Y);
+                return;
+            }
+
+            if (Cursor.Position.X != monitor2.Bounds.X ||
+                Cursor.Position.Y >= monitor2.Bounds.Y + monitor2.Bounds.Height) return;
+            Cursor.Position = new Point(monitor1.Bounds.X + monitor1.Bounds.Width - 2, Cursor.Position.Y);
 
             // TODO: If top to bottom
         }

@@ -5,6 +5,8 @@
     <TargetFramework>net5.0-windows</TargetFramework>
     <RootNamespace>Mouse_Warp</RootNamespace>
     <UseWindowsForms>true</UseWindowsForms>
+    <ApplicationIcon>mousewarp.ico</ApplicationIcon>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
 
   <ItemGroup>

@@ -49,7 +49,7 @@ namespace Mouse_Warp
             this.trayIconContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.QuitMenuItem});
             this.trayIconContextMenu.Name = "trayIconContextMenu";
-            this.trayIconContextMenu.Size = new System.Drawing.Size(181, 48);
+            this.trayIconContextMenu.Size = new System.Drawing.Size(98, 26);
             // 
             // QuitMenuItem
             // 
@@ -65,6 +65,7 @@ namespace Mouse_Warp
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "MainWindow";
