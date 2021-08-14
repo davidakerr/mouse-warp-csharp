@@ -1,12 +1,9 @@
-﻿using Gma.System.MouseKeyHook;
+﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Windows.Forms;
 using System.Drawing;
-
-using System.Runtime.InteropServices;
-using System;
 using System.Timers;
+using System.Windows.Forms;
+using Timer = System.Timers.Timer;
 
 //Screen[Bounds ={ X = 196,Y = -1440,Width = 2560,Height = 1440}
 //WorkingArea ={ X = 196,Y = -1440,Width = 2560,Height = 1440}
@@ -15,61 +12,62 @@ using System.Timers;
 //Primary = False DeviceName =\\.\DISPLAY1
 //Screen[Bounds ={X = 0, Y = 0, Width = 5120, Height = 1440} WorkingArea ={ X = 0,Y = 0,Width = 5120,Height = 1400}
 //Primary = True DeviceName =\\.\DISPLAY3
-public class MouseWarp
+namespace Mouse_Warp
 {
-
-    private int warpDistance = 100;
-    private static List<string> monitorNames = null;
-    private static System.Timers.Timer aTimer;
-
-
-    public MouseWarp()
+    public class MouseWarp
     {
-        SetTimer();
-    }
+        private static List<string> _monitorNames;
+        private static Timer _aTimer;
 
-    private static void SetTimer()
-    {
-        // Create a timer with a two second interval.
-        aTimer = new System.Timers.Timer(25);
-        // Hook up the Elapsed event for the timer. 
-        aTimer.Elapsed += OnTimedEvent;
-        aTimer.AutoReset = true;
-        aTimer.Enabled = true;
-    }
 
-    private static void OnTimedEvent(Object source, ElapsedEventArgs e)
-    {
-        if (monitorNames != null && monitorNames.Count == 2)
+        public MouseWarp()
         {
-            //monitorNames.ForEach(montior => Debug.WriteLine(montior));
-            var monitor1 = Array.Find(Screen.AllScreens, s => s.DeviceName == monitorNames[0]);
-            var monitor2 = Array.Find(Screen.AllScreens, s => s.DeviceName == monitorNames[1]);
+            SetTimer();
+        }
 
+        private static void SetTimer()
+        {
+            _aTimer = new Timer(25);
+            _aTimer.Elapsed += OnTimedEvent;
+            _aTimer.AutoReset = true;
+            _aTimer.Enabled = true;
+        }
+
+        private static void OnTimedEvent(object source, ElapsedEventArgs e)
+        {
+            if (_monitorNames is not {Count: 2}) return;
+            var selection1 = Array.Find(Screen.AllScreens, s => s.DeviceName == _monitorNames[0]);
+            var selection2 = Array.Find(Screen.AllScreens, s => s.DeviceName == _monitorNames[1]);
+
+            ref var monitor1 = ref selection1;
+            ref var monitor2 = ref selection2;
+
+            if (!(selection2.Bounds.X > selection1.Bounds.X + selection1.Bounds.Width))
+            {
+                monitor1 = ref selection2;
+                monitor2 = ref selection1;
+            }
+
+
+            // If left to right then :
 
             if (Cursor.Position.X == monitor1.Bounds.X + monitor1.Bounds.Width - 1)
-            {
                 Cursor.Position = new Point(monitor2.Bounds.X + 2, Cursor.Position.Y);
-
-            }
             if (Cursor.Position.X == monitor2.Bounds.X)
-            {
                 Cursor.Position = new Point(monitor1.Bounds.X + monitor1.Bounds.Width - 2, Cursor.Position.Y);
 
-            }
+            // TODO: If top to bottom
+        }
+
+        public void SetMonitorNames(List<string> monitorNames)
+        {
+            _monitorNames = monitorNames;
+        }
+
+
+        private int Translate(int value, int leftMin, int leftMax, int rightMin, int rightMax)
+        {
+            return (value - leftMin) * (rightMax - rightMin) / (leftMax - leftMin) + rightMin;
         }
     }
-
-    public void setMonitorNames(List<string> _monitorNames)
-    {
-        monitorNames = _monitorNames;
-    }
-
-
-    private int translate(int value, int left_min, int left_max, int right_min, int right_max)
-    {
-        return ((value - left_min) * (right_max - right_min)) / (left_max - left_min) + right_min;
-    }
-
-
 }
