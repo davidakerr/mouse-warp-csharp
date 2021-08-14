@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31515.178
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mouse Warp", "Mouse Warp.csproj", "{3A0BDB5D-4B15-4C66-9C1F-B4804AE0A701}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MouseWarp", "MouseWarp.csproj", "{3A0BDB5D-4B15-4C66-9C1F-B4804AE0A701}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "MouseWarpInstaller", "MouseWarpInstaller\MouseWarpInstaller.vdproj", "{10473797-5901-4689-B4E9-EC687F030378}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +13,13 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{3A0BDB5D-4B15-4C66-9C1F-B4804AE0A701}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3A0BDB5D-4B15-4C66-9C1F-B4804AE0A701}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A0BDB5D-4B15-4C66-9C1F-B4804AE0A701}.Debug|Any CPU.ActiveCfg = Release|Any CPU
+		{3A0BDB5D-4B15-4C66-9C1F-B4804AE0A701}.Debug|Any CPU.Build.0 = Release|Any CPU
 		{3A0BDB5D-4B15-4C66-9C1F-B4804AE0A701}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3A0BDB5D-4B15-4C66-9C1F-B4804AE0A701}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10473797-5901-4689-B4E9-EC687F030378}.Debug|Any CPU.ActiveCfg = Release
+		{10473797-5901-4689-B4E9-EC687F030378}.Debug|Any CPU.Build.0 = Release
+		{10473797-5901-4689-B4E9-EC687F030378}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
