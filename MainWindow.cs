@@ -1,41 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using Mouse_Warp.Properties;
 
 namespace Mouse_Warp
 {
     public partial class MainWindow : Form
     {
-        private readonly HashSet<Button> _buttons = new();
+        private readonly List<Button> _buttons = new();
         private readonly MouseWarp _mouseWarp = new();
         private bool _isQuitting;
+        private HashSet<string> _selectedMonitors = new();
 
         public MainWindow()
         {
             InitializeComponent();
             FormBorderStyle = FormBorderStyle.FixedSingle;
+
+
+            LoadSettings();
+
+
             var screens = Screen.AllScreens;
 
             SetWindowSize(
                 // Don't ask about the 20 ? 
                 TotalRealEstateWidth(screens) / GlobalConstant.Scale + GlobalConstant.WindowPadding + 20,
                 TotalRealEstateHeight(screens) / GlobalConstant.Scale + GlobalConstant.MenuBarHeight +
-                GlobalConstant.WindowPadding
-            );
+                GlobalConstant.WindowPadding);
 
             foreach (var screen in Screen.AllScreens)
-                Shown += (s, e) => CreateButton(
-                    screen.DeviceName,
-                    new Size(
-                        screen.Bounds.Width,
-                        screen.Bounds.Height) / GlobalConstant.Scale,
-                    new Point(
-                        screen.Bounds.X / GlobalConstant.Scale + GlobalConstant.WindowPadding / 2,
-                        (screen.Bounds.Y + YOffset(screens)) / GlobalConstant.Scale + GlobalConstant.WindowPadding / 2)
-                );
+                CreateButton(screen.DeviceName,
+                    new Size(screen.Bounds.Width, screen.Bounds.Height) / GlobalConstant.Scale,
+                    new Point(screen.Bounds.X / GlobalConstant.Scale + GlobalConstant.WindowPadding / 2,
+                        (screen.Bounds.Y + YOffset(screens)) / GlobalConstant.Scale +
+                        GlobalConstant.WindowPadding / 2));
+            SetButtonSelected();
         }
 
         // If Y is a minus then give the inverse of that to add to values in the find max height function
@@ -83,21 +87,30 @@ namespace Mouse_Warp
             newButton.Size = size;
             newButton.Location = location;
             newButton.MouseDown += OnScreenSelectHandler;
+            _buttons.Add(newButton);
         }
 
         private void OnScreenSelectHandler(object sender, MouseEventArgs e)
         {
-            Debug.WriteLine(_buttons.Count());
-            //Debug.WriteLine((sender as Button).Name);
-            if (_buttons.Count() == 2)
+            if (_selectedMonitors.Count() == 2)
             {
-                _buttons.ToList().ForEach(button => SetButtonColor(button, Color.Black));
-                _buttons.Clear();
+                _buttons.ForEach(button => SetButtonColor(button, Color.Black));
+                _selectedMonitors.Clear();
             }
 
-            _buttons.Add(sender as Button);
-            _buttons.ToList().ForEach(button => { button.BackColor = Color.Blue; });
-            _mouseWarp.SetMonitorNames(new List<string>(_buttons.Select(button => button.Name)));
+            _selectedMonitors.Add((sender as Button).Name);
+            SetButtonSelected();
+            SaveSettings();
+            _mouseWarp.SetMonitorNames(_selectedMonitors.ToList());
+        }
+
+        private void SetButtonSelected()
+        {
+            _buttons.ForEach(button =>
+            {
+                if (!_selectedMonitors.Any(button.Name.Contains)) return;
+                SetButtonColor(button, Color.Blue);
+            });
         }
 
         private static void SetButtonColor(Control button, Color color)
@@ -114,6 +127,21 @@ namespace Mouse_Warp
 
         private void MainWindow_Load(object sender, EventArgs e)
         {
+        }
+
+        private void LoadSettings()
+        {
+            if (Settings.Default.monitorNames == null) return;
+            _selectedMonitors = new HashSet<string>(Settings.Default.monitorNames.Cast<string>().ToList());
+            _mouseWarp.SetMonitorNames(_selectedMonitors.ToList());
+        }
+
+        private void SaveSettings()
+        {
+            StringCollection collection = new();
+            collection.AddRange(_selectedMonitors.ToArray());
+            Settings.Default["monitorNames"] = collection;
+            Settings.Default.Save();
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)

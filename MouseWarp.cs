@@ -17,8 +17,7 @@ namespace Mouse_Warp
     public class MouseWarp
     {
         private static List<string> _monitorNames;
-        private static Timer _aTimer;
-
+        private static Timer _timer;
 
         public MouseWarp()
         {
@@ -27,10 +26,10 @@ namespace Mouse_Warp
 
         private static void SetTimer()
         {
-            _aTimer = new Timer(25);
-            _aTimer.Elapsed += OnTimedEvent;
-            _aTimer.AutoReset = true;
-            _aTimer.Enabled = true;
+            _timer = new Timer(25);
+            _timer.Elapsed += OnTimedEvent;
+            _timer.AutoReset = true;
+            _timer.Enabled = true;
         }
 
         private static void OnTimedEvent(object source, ElapsedEventArgs e)
@@ -51,9 +50,10 @@ namespace Mouse_Warp
 
             // If left to right then :
 
-            if (Cursor.Position.X == monitor1.Bounds.X + monitor1.Bounds.Width - 1)
+            if (Cursor.Position.X == monitor1.Bounds.X + monitor1.Bounds.Width - 1 &&
+                Cursor.Position.Y > monitor1.Bounds.Y)
                 Cursor.Position = new Point(monitor2.Bounds.X + 2, Cursor.Position.Y);
-            if (Cursor.Position.X == monitor2.Bounds.X)
+            if (Cursor.Position.X == monitor2.Bounds.X && Cursor.Position.Y > monitor2.Bounds.Y)
                 Cursor.Position = new Point(monitor1.Bounds.X + monitor1.Bounds.Width - 2, Cursor.Position.Y);
 
             // TODO: If top to bottom
@@ -65,7 +65,7 @@ namespace Mouse_Warp
         }
 
 
-        private int Translate(int value, int leftMin, int leftMax, int rightMin, int rightMax)
+        private static int Translate(int value, int leftMin, int leftMax, int rightMin, int rightMax)
         {
             return (value - leftMin) * (rightMax - rightMin) / (leftMax - leftMin) + rightMin;
         }
